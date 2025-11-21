@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechCompare Pro | Comparador Inteligente de Notebooks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary: #0f172a;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --warning: #f97316;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--gray-100);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .app-container {
+            max-width: 1920px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-light), white);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+        
+        .nav-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-400);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            color: var(--gray-300);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-light);
+        }
+        
+        .nav-item.active {
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--primary-light);
+            border-left: 3px solid var(--primary);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            background: var(--secondary);
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .page-subtitle {
+            color: var(--gray-400);
+            margin-top: 0.5rem;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 0.75rem 1rem;
+            width: 300px;
+        }
+        
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: white;
+            width: 100%;
+            margin-left: 0.5rem;
+            outline: none;
+        }
+        
+        .search-box input::placeholder {
+            color: var(--gray-500);
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-icon.blue {
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--primary-light);
+        }
+        
+        .stat-icon.green {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+        
+        .stat-icon.orange {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent);
+        }
+        
+        .stat-icon.purple {
+            background: rgba(139, 92, 246, 0.15);
+            color: #8b5cf6;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        /* Dashboard Content */
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .chart-container {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--gray-400);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+        
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .product-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+        
+        .product-card.featured {
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+        
+        .product-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+        }
+        
+        .product-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-featured {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent);
+        }
+        
+        .badge-discount {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+        
+        .badge-new {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+        
+        .store-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        
+        .store-kabum { background: #ff6b00; color: white; }
+        .store-amazon { background: #ff9900; color: black; }
+        .store-magalu { background: #ff0000; color: white; }
+        .store-americanas { background: #ff0000; color: white; }
+        
+        .product-brand {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+        
+        .product-model {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+        }
+        
+        .product-price {
+            text-align: right;
+        }
+        
+        .price-current {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .price-original {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            text-decoration: line-through;
+        }
+        
+        .product-specs {
+            padding: 1.5rem;
+        }
+        
+        .spec-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .spec-item:last-child {
+            border-bottom: none;
+        }
+        
+        .spec-label {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+        }
+        
+        .spec-value {
+            color: white;
+            font-weight: 500;
+        }
+        
+        .product-footer {
+            padding: 1rem 1.5rem;
+            background: rgba(15, 23, 42, 0.5);
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        
+        .performance-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .score-value {
+            background: var(--primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+        }
+        
+        /* Side Panel */
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .filter-card, .top-products-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .filter-title, .top-products-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-group-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-400);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--gray-300);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .filter-option:hover {
+            color: white;
+        }
+        
+        .filter-option input {
+            accent-color: var(--primary);
+        }
+        
+        .top-product-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .top-product-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .top-product-item:last-child {
+            border-bottom: none;
+        }
+        
+        .top-product-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .top-product-info {
+            flex: 1;
+        }
+        
+        .top-product-name {
+            font-weight: 500;
+            color: white;
+            font-size: 0.875rem;
+        }
+        
+        .top-product-price {
+            color: var(--primary-light);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Pulse Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .user-menu {
+                flex-direction: column;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <div class="logo-text">TechCompare Pro</div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Principal</div>
+                <a href="#" class="nav-item active" onclick="filterProducts('all')">
+                    <i class="fas fa-chart-line"></i>
+                    Todos os Notebooks
+                </a>
+                <a href="#" class="nav-item" onclick="filterProducts('best')">
+                    <i class="fas fa-crown"></i>
+                    Melhores Ofertas
+                </a>
+                <a href="#" class="nav-item" onclick="filterProducts('under2500')">
+                    <i class="fas fa-wallet"></i>
+                    Até R$ 2.500
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Categorias</div>
+                <a href="#" class="nav-item" onclick="filterProducts('intel')">
+                    <i class="fas fa-microchip"></i>
+                    Intel Core i5/i7
+                </a>
+                <a href="#" class="nav-item" onclick="filterProducts('ryzen')">
+                    <i class="fas fa-bolt"></i>
+                    AMD Ryzen
+                </a>
+                <a href="#" class="nav-item" onclick="filterProducts('gaming')">
+                    <i class="fas fa-gamepad"></i>
+                    Gaming
+                </a>
+                <a href="#" class="nav-item" onclick="filterProducts('work')">
+                    <i class="fas fa-briefcase"></i>
+                    Trabalho/Programação
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Lojas Parceiras</div>
+                <a href="https://www.kabum.com.br" target="_blank" class="nav-item">
+                    <i class="fas fa-store"></i>
+                    Kabum
+                </a>
+                <a href="https://www.amazon.com.br" target="_blank" class="nav-item">
+                    <i class="fas fa-store"></i>
+                    Amazon
+                </a>
+                <a href="https://www.magazineluiza.com.br" target="_blank" class="nav-item">
+                    <i class="fas fa-store"></i>
+                    Magalu
+                </a>
+                <a href="https://www.americanas.com.br" target="_blank" class="nav-item">
+                    <i class="fas fa-store"></i>
+                    Americanas
+                </a>
+            </div>
+            
+            <div class="nav-section" style="margin-top: auto;">
+                <div class="nav-title">Sobre</div>
+                <a href="#" class="nav-item" onclick="showAbout()">
+                    <i class="fas fa-info-circle"></i>
+                    Sobre o Projeto
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <h1 class="page-title" id="page-title">Dashboard de Comparação</h1>
+                    <p class="page-subtitle" id="page-subtitle">Analise e compare os melhores notebooks do mercado</p>
+                </div>
+                
+                <div class="user-menu">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Pesquisar notebooks..." onkeyup="searchProducts()">
+                    </div>
+                    <button class="btn btn-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i>
+                        Atualizar
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="total-products">22</div>
+                            <div class="stat-label">Notebooks Monitorados</div>
+                        </div>
+                        <div class="stat-icon blue">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="avg-price">R$ 2.899</div>
+                            <div class="stat-label">Preço Médio</div>
+                        </div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="avg-discount">18.5%</div>
+                            <div class="stat-label">Desconto Médio</div>
+                        </div>
+                        <div class="stat-icon orange">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="stores-count">4</div>
+                            <div class="stat-label">Lojas Parceiras</div>
+                        </div>
+                        <div class="stat-icon purple">
+                            <i class="fas fa-store"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <div class="main-panel">
+                    <!-- Charts -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Comparação de Preços</h3>
+                            <div class="chart-actions">
+                                <button class="btn btn-outline" onclick="changeChartRange('week')">7 Dias</button>
+                                <button class="btn btn-primary" onclick="changeChartRange('month')">30 Dias</button>
+                            </div>
+                        </div>
+                        <canvas id="priceChart" height="300"></canvas>
+                    </div>
+                    
+                    <!-- Products Grid -->
+                    <div>
+                        <div class="chart-header">
+                            <h3 class="chart-title" id="products-title">Notebooks em Destaque</h3>
+                            <div class="chart-actions">
+                                <button class="btn btn-outline" onclick="showAllProducts()">Ver Todos</button>
+                                <button class="btn btn-outline" onclick="exportToCSV()">
+                                    <i class="fas fa-download"></i>
+                                    Exportar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="products-grid" id="products-container">
+                            <!-- Produtos serão carregados aqui via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Side Panel -->
+                <div class="side-panel">
+                    <!-- Filters -->
+                    <div class="filter-card">
+                        <h3 class="filter-title">Filtros Avançados</h3>
+                        
+                        <div class="filter-group">
+                            <div class="filter-group-title">Processador</div>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" checked onchange="toggleFilter('intel')">
+                                    Intel Core i5/i7
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" checked onchange="toggleFilter('ryzen')">
+                                    AMD Ryzen
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <div class="filter-group-title">Preço</div>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="radio" name="price" value="all" checked onchange="filterByPrice('all')">
+                                    Todos os Preços
+                                </label>
+                                <label class="filter-option">
+                                    <input type="radio" name="price" value="2500" onchange="filterByPrice('2500')">
+                                    Até R$ 2.500
+                                </label>
+                                <label class="filter-option">
+                                    <input type="radio" name="price" value="3500" onchange="filterByPrice('3500')">
+                                    R$ 2.500 - R$ 3.500
+                                </label>
+                                <label class="filter-option">
+                                    <input type="radio" name="price" value="4500" onchange="filterByPrice('4500')">
+                                    R$ 3.500 - R$ 4.500
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <div class="filter-group-title">Memória RAM</div>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" onchange="toggleRamFilter('8')">
+                                    8GB
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" onchange="toggleRamFilter('16')">
+                                    16GB
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" onchange="toggleRamFilter('32')">
+                                    32GB ou mais
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <div class="filter-group-title">Lojas</div>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" checked onchange="toggleStore('kabum')">
+                                    Kabum
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" checked onchange="toggleStore('amazon')">
+                                    Amazon
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" checked onchange="toggleStore('magalu')">
+                                    Magalu
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" checked onchange="toggleStore('americanas')">
+                                    Americanas
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="clearFilters()">
+                            <i class="fas fa-times"></i>
+                            Limpar Filtros
+                        </button>
+                    </div>
+                    
+                    <!-- Top Products -->
+                    <div class="top-products-card">
+                        <h3 class="top-products-title">Top 5 Recomendados</h3>
+                        
+                        <div class="top-product-item" onclick="showProduct('lenovo-ryzen')">
+                            <div class="top-product-rank">1</div>
+                            <div class="top-product-info">
+                                <div class="top-product-name">Lenovo Ideapad Ryzen 3</div>
+                                <div class="top-product-price">R$ 2.039</div>
+                            </div>
+                        </div>
+                        
+                        <div class="top-product-item" onclick="showProduct('asus-ryzen5')">
+                            <div class="top-product-rank">2</div>
+                            <div class="top-product-info">
+                                <div class="top-product-name">ASUS Vivobook Ryzen 5</div>
+                                <div class="top-product-price">R$ 2.209</div>
+                            </div>
+                        </div>
+                        
+                        <div class="top-product-item" onclick="showProduct('dell-i5-1235u')">
+                            <div class="top-product-rank">3</div>
+                            <div class="top-product-info">
+                                <div class="top-product-name">Dell Inspiron i5</div>
+                                <div class="top-product-price">R$ 2.799</div>
+                            </div>
+                        </div>
+                        
+                        <div class="top-product-item" onclick="showProduct('lenovo-slim3')">
+                            <div class="top-product-rank">4</div>
+                            <div class="top-product-info">
+                                <div class="top-product-name">Lenovo Slim 3 i5</div>
+                                <div class="top-product-price">R$ 3.299</div>
+                            </div>
+                        </div>
+                        
+                        <div class="top-product-item" onclick="showProduct('acer-aspire5')">
+                            <div class="top-product-rank">5</div>
+                            <div class="top-product-info">
+                                <div class="top-product-name">Acer Aspire 5 i5</div>
+                                <div class="top-product-price">R$ 2.599</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de dados completa com todos os produtos
+        const products = {
+            'all': [
+                // KABUM
+                {
+                    id: 'asus-vivobook-i5-1334u',
+                    brand: "ASUS",
+                    model: "Vivobook 15 X1504VA",
+                    processor: "Intel Core i5-1334U",
+                    ram: 4,
+                    storage: 256,
+                    ssd: true,
+                    screen: "15.6\" Full HD",
+                    os: "Linux",
+                    priceOriginal: 2887.78,
+                    priceDiscount: 2099.00,
+                    discount: 14,
+                    store: "kabum",
+                    url: "https://www.kabum.com.br/produto/778173/notebook-asus-vivobook-15-x1504va-intel-core-i5-1334u-4gb-ram-256gb-ssd-linux-keepos-tela-15-6-led-fhd-silver-nj1726",
+                    performance: 7.2,
+                    value: 6.8,
+                    category: ["intel", "work"],
+                    specs: ["Intel i5 13ª geração", "Tela Full HD", "Design Premium"],
+                    issues: ["Apenas 4GB RAM", "Linux (necessita Windows)"]
+                },
+                {
+                    id: 'lenovo-ryzen',
+                    brand: "LENOVO",
+                    model: "Ideapad 1 15AMN7",
+                    processor: "AMD Ryzen 3 7320U",
+                    ram: 8,
+                    storage: 256,
+                    ssd: true,
+                    screen: "15.6\" HD",
+                    os: "Windows 11",
+                    priceOriginal: 2883.90,
+                    priceDiscount: 2039.15,
+                    discount: 14,
+                    store: "kabum",
+                    url: "https://www.kabum.com.br/produto/902707/notebook-lenovo-ideapad-1-15amn7-amd-ryzen-3-7320u-8gb-256gb-ssd-windows-11-15-6-82x5000mbr-cloud-grey",
+                    performance: 7.0,
+                    value: 8.5,
+                    category: ["ryzen", "work"],
+                    featured: true,
+                    specs: ["8GB RAM", "Windows 11 Incluído", "Eficiência Energética"],
+                    issues: ["Tela HD (1366x768)", "Processador entry-level"]
+                },
+                {
+                    id: 'asus-ryzen5',
+                    brand: "ASUS",
+                    model: "Vivobook Go 15",
+                    processor: "AMD Ryzen 5 7520U",
+                    ram: 8,
+                    storage: 256,
+                    ssd: true,
+                    screen: "15.6\" Full HD",
+                    os: "Linux",
+                    priceOriginal: 2209.15,
+                    priceDiscount: 2209.15,
+                    discount: 0,
+                    store: "kabum",
+                    url: "https://www.kabum.com.br/produto/579676/notebook-asus-vivobook-go-15-e1504fa-amd-ryzen-5-7520u-8gb-ram-256gb-ssd-linux-keepos-15-60-fhd-mixed-black-nj731",
+                    performance: 8.0,
+                    value: 8.0,
+                    category: ["ryzen", "work"],
+                    featured: true,
+                    specs: ["Ryzen 5", "8GB RAM", "Tela Full HD", "Performance Superior"],
+                    issues: ["Sem desconto", "Linux (necessita Windows)"]
+                },
+                {
+                    id: 'lenovo-i5-1235u',
+                    brand: "LENOVO",
+                    model: "Ideapad 1i",
+                    processor: "Intel Core i5-1235U",
+                    ram: 8,
+                    storage: 512,
+                    ssd: true,
+                    screen: "15.6\" HD",
+                    os: "Windows 11",
+                    priceOriginal: 3702.47,
+                    priceDiscount: 2689.00,
+                    discount: 14,
+                    store: "kabum",
+                    url: "https://www.kabum.com.br/produto/509660/notebook-lenovo-ideapad-1i-intel-core-i5-1235u-8gb-ram-ssd-512gb-tela-15-6-hd-windows-11-cinza-82vy000qbr",
+                    performance: 7.5,
+                    value: 7.2,
+                    category: ["intel", "work"],
+                    specs: ["512GB SSD", "Windows 11", "8GB RAM"],
+                    issues: ["Tela HD", "Processador 12ª geração"]
+                },
+
+                // AMAZON
+                {
+                    id: 'dell-i5-1235u',
+                    brand: "DELL",
+                    model: "Inspiron 15 i3100",
+                    processor: "Intel Core i5-1235U",
+                    ram: 8,
+                    storage: 512,
+                    ssd: true,
+                    screen: "15.6\" Full HD",
+                    os: "Windows 11",
+                    priceOriginal: 3299.00,
+                    priceDiscount: 2799.00,
+                    discount: 15,
+                    store: "amazon",
+                    url: "https://www.amazon.com.br/Notebook-Dell-Inspiron-i15-i3100-A15P-Carbono/dp/B0FH38NMLP/",
+                    performance: 8.0,
+                    value: 8.2,
+                    category: ["intel", "work"],
+                    featured: true,
+                    specs: ["Qualidade Dell", "Tela Full HD", "Windows 11", "512GB SSD"],
+                    issues: ["Design mais simples"]
+                },
+                {
+                    id: 'asus-vivobook-i5-amazon',
+                    brand: "ASUS",
+                    model: "Vivobook 15 X1504VA",
+                    processor: "Intel Core i5-1334U",
+                    ram: 8,
+                    storage: 512,
+                    ssd: true,
+                    screen: "15.6\" Full HD",
+                    os: "Windows 11",
+                    priceOriginal: 3499.00,
+                    priceDiscount: 2999.00,
+                    discount: 14,
+                    store: "amazon",
+                    url: "https://www.amazon.com.br/Notebook-ASUS-Vivobook-X1504VA-Windows/dp/B0F4ZTT2MM/",
+                    performance: 8.2,
+                    value: 7.8,
+                    category: ["intel", "work"],
+                    specs: ["8GB RAM", "512GB SSD", "Windows 11", "Tela Full HD"],
+                    issues: ["Preço mais elevado"]
+                },
+                {
+                    id: 'acer-gaming',
+                    brand: "ACER",
+                    model: "Nitro 5 AN515-58",
+                    processor: "Intel Core i5-12500H",
+                    ram: 8,
+                    storage: 512,
+                    ssd: true,
+                    screen: "15.6\" Full HD 144Hz",
+                    os: "Windows 11",
+                    priceOriginal: 4999.00,
+                    priceDiscount: 4299.00,
+                    discount: 14,
+                    store: "amazon",
+                    url: "https://www.amazon.com.br/Notebook-A15-51M-54E6-Gera%C3%A7%C3%A3o-processadores-Windows/dp/B0DM6Q9K97/",
+                    performance: 8.8,
+                    value: 8.0,
+                    category: ["intel", "gaming"],
+                    featured: true,
+                    specs: ["Placa de Vídeo Dedicada", "Tela 144Hz", "Performance Gamer"],
+                    issues: ["Preço elevado"]
+                },
+                {
+                    id: 'dell-i5-1335u',
+                    brand: "DELL",
+                    model: "Inspiron 15 I1300",
+                    processor: "Intel Core i5-1335U",
+                    ram: 8,
+                    storage: 512,
+                    ssd: true,
+                    screen: "15.6\" Full HD",
+                    os: "Windows 11",
+                    priceOriginal: 3799.00,
+                    priceDiscount: 3299.00,
+                    discount: 13,
+                    store: "amazon",
+                    url: "https://www.amazon.com.br/Notebook-Dell-Inspiron-I15-I1300-A30P-Carbono/dp/B0FHCHBRGF/",
+                    performance: 8.3,
+                    value: 7.9,
+                    category: ["intel", "work"],
+                    specs: ["13ª geração", "512GB SSD", "Windows 11", "Design Moderno"],
+                    issues: ["Preço mais elevado"]
+                },
+                {
+                    id: 'acer-aspire5',
+                    brand: "ACER",
+                    model: "Aspire 5 A515-57",
+                    processor: "Intel Core i5-1235U",
+                    ram: 8,
+                    storage: 256,
+                    ssd: true,
+                    screen: "15.6\" Full HD IPS",
+                    os: "Windows 11",
+                    priceOriginal: 2899.00,
+                    priceDiscount: 2599.00,
+                    discount: 10,
+                    store: "amazon",
+                    url: "https://www.amazon.com.br/Notebook-Aspire-AG15-71P-5939-Gera%C3%A7%C3%A3o-Windows/dp/B0B8MCB6KK/",
+                    performance: 7.8,
+                    value: 7.9,
+                    category: ["intel", "work"],
+                    specs: ["Tela IPS", "Windows 11", "Design Moderno"],
+                    issues: ["256GB pode ser pouco"]
+                },
+
+                // AMERICANAS
+                {
+                    id: 'acer-aspire5-i5',
+                    brand: "ACER",
+                    model: "Aspire 5 A515-57",
+                    processor: "Intel Core i5-12450H",
+                    ram: 8,
+                    storage: 256,
+                    ssd: true,
+                    screen: "15.6\" Full HD",
+                    os: "Windows 11",
+                    priceOriginal: 2999.00,
+                    priceDiscount: 2699.00,
+                    discount: 10,
+                    store: "americanas",
+                    url: "https://www.americanas.com.br/notebook-acer-aspire-5-a515-57-55b8-intel-core-i5-12450h-8gb-256-gb-ssd-tela-15-6-polegadas-full-hd-windows-11-home-7504027570/p",
+                    performance: 8.0,
+                    value: 8.1,
+                    category: ["intel", "work"],
+                    specs: ["Processador H", "Tela Full HD", "Windows 11"],
+                    issues: ["256GB SSD"]
+                },
+                {
+                    id: 'acer-aspire3',
+                    brand: "ACER",
+                    model: "Aspire 3 A315-510P",
+                    processor: "Intel Core i3",
+                    ram: 8,
+                    storage: 256,
+                    ssd: true,
+                    screen: "15.6\" Full HD",
+                    os: "Windows 11",
+                    priceOriginal: 2299.00,
+                    priceDiscount: 1999.00,
+                    discount: 13,
+                    store: "americanas",
+                    url: "https://www.americanas.com.br/notebook-acer-aspire-3-a315-510p-34xc-intel-core-i3-8gb-256-gb-ssd-tela-15-6-polegadas-full-hd-windows-11-home-7504027557/p",
+                    performance: 6.0,
+                    value: 7.5,
+                    category: ["intel"],
+                    specs: ["Preço Acessível", "Windows 11", "Tela Full HD"],
+                    issues: ["Processador i3", "Performance básica"]
+                },
+
+                // MAGALU
+                {
+                    id: 'asus-vivobook-magalu',
+                    brand: "ASUS",
+                    model: "Vivobook 15 X1504VA",
+                    processor: "Intel Core i5-1334U",
+                    ram: 8,
+                    storage: 512,
+                    ssd: true,
+                    screen: "15.6\" Full HD",
+                    os: "Windows 11",
+                    priceOriginal: 3499.00,
+                    priceDiscount: 2999.00,
+                    discount: 14,
+                    store: "magalu",
+                    url: "https://www.magazineluiza.com.br/notebook-asus-vivobook-15-intel-core-i5-1334u-8gb-ram-512gb-ssd-156-full-hd-windows-11-x1504va-nj3957w/p/240300400/in/note/",
+                    performance: 8.2,
+                    value: 7.8,
+                    category: ["intel", "work"],
+                    specs: ["8GB RAM", "512GB SSD", "Windows 11", "Tela Full HD"],
+                    issues: ["Preço mais elevado"]
+                },
+                {
+                    id: 'lenovo-ideapad1i-magalu',
+                    brand: "LENOVO",
+                    model: "Ideapad 1i",
+                    processor: "Intel Core i5",
+                    ram: 8,
+                    storage: 512,
+                    ssd: true,
+                    screen: "15.6\"",
+                    os: "Windows 11",
+                    priceOriginal: 3299.00,
+                    priceDiscount: 2799.00,
+                    discount: 15,
+                    store: "magalu",
+                    url: "https://www.magazineluiza.com.br/notebook-lenovo-ideapad-1i-intel-core-i5-8gb-ram-ssd-512gb-windows-11-156-15iau7/p/238006100/in/leip/",
+                    performance: 7.5,
+                    value: 7.2,
+                    category: ["intel", "work"],
+                    specs: ["512GB SSD", "Windows 11", "8GB RAM"],
+                    issues: ["Especificações básicas"]
+                },
+                {
+                    id: 'lenovo-slim3',
+                    brand: "LENOVO",
+                    model: "IdeaPad Slim 3",
+                    processor: "Intel Core i5-13420H",
+                    ram: 16,
+                    storage: 512,
+                    ssd: true,
+                    screen: "15.6\"",
+                    os: "Windows 11",
+                    priceOriginal: 3999.00,
+                    priceDiscount: 3299.00,
+                    discount: 17,
+                    store: "magalu",
+                    url: "https://www.magazineluiza.com.br/notebook-lenovo-ideapad-slim-3-15irh10-intel-core-i5-13420h-16gb-512gb-ssd-windows-11-15-3-83ns0001br-luna-grey/p/ebb4eg9b77/in/leip/",
+                    performance: 8.5,
+                    value: 8.3,
+                    category: ["intel", "work"],
+                    featured: true,
+                    specs: ["16GB RAM", "Processador H", "512GB SSD", "Design Slim"],
+                    issues: ["Preço mais elevado"]
+                },
+                {
+                    id: 'lenovo-office',
+                    brand: "LENOVO",
+                    model: "Ideapad 1i com Office",
+                    processor: "Intel Core i5",
+                    ram: 8,
+                    storage: 512,
+                    ssd: true,
+                    screen: "15.6\"",
+                    os: "Windows 11",
+                    priceOriginal: 3499.00,
+                    priceDiscount: 2999.00,
+                    discount: 14,
+                    store: "magalu",
+                    url: "https://www.magazineluiza.com.br/notebook-lenovo-ideapad-1i-intel-core-i5-8gb-ram-ssd-512gb-microsoft-365-personal-office-apps-1tb/p/239121900/in/leip/",
+                    performance: 7.5,
+                    value: 7.5,
+                    category: ["intel", "work"],
+                    specs: ["Office Incluído", "512GB SSD", "Windows 11"],
+                    issues: ["Especificações básicas"]
+                },
+                {
+                    id: 'asus-ryzen5-magalu',
+                    brand: "ASUS",
+                    model: "Vivobook Go 15",
+                    processor: "AMD Ryzen 5 7520U",
+                    ram: 8,
+                    storage: 512,
+                    ssd: true,
+                    screen: "15.6\" Full HD",
+                    os: "Windows 11",
+                    priceOriginal: 2899.00,
+                    priceDiscount: 2499.00,
+                    discount: 14,
+                    store: "magalu",
+                    url: "https://www.magazineluiza.com.br/notebook-asus-vivobook-go-15-amd-ryzen-5-7520u-8gb-ram-512gb-ssd-156-full-hd-windows-11-e1504fa-nj836w/p/240066500/in/nass/",
+                    performance: 8.2,
+                    value: 8.4,
+                    category: ["ryzen", "work"],
+                    featured: true,
+                    specs: ["Ryzen 5", "8GB RAM", "512GB SSD", "Windows 11"],
+                    issues: ["Design simples"]
+                }
+            ],
+            'intel': [],
+            'ryzen': [],
+            'gaming': [],
+            'work': [],
+            'best': [],
+            'under2500': []
+        };
+
+        // Inicializar categorias
+        function initializeCategories() {
+            products.intel = products.all.filter(p => p.category.includes('intel'));
+            products.ryzen = products.all.filter(p => p.category.includes('ryzen'));
+            products.gaming = products.all.filter(p => p.category.includes('gaming'));
+            products.work = products.all.filter(p => p.category.includes('work'));
+            products.best = products.all.filter(p => p.featured || p.value >= 8);
+            products.under2500 = products.all.filter(p => p.priceDiscount <= 2500);
+        }
+
+        // Estado atual dos filtros
+        let currentFilter = 'all';
+        let currentProducts = [...products.all];
+        let activeFilters = {
+            intel: true,
+            ryzen: true,
+            price: 'all',
+            ram: [],
+            stores: ['kabum', 'amazon', 'magalu', 'americanas']
+        };
+
+        // Inicializar dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCategories();
+            renderProducts();
+            initializeCharts();
+            updateStats();
+        });
+
+        // Filtros por categoria
+        function filterProducts(category) {
+            currentFilter = category;
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Atualizar título da página
+            const titles = {
+                'all': 'Todos os Notebooks',
+                'intel': 'Notebooks Intel Core i5/i7',
+                'ryzen': 'Notebooks AMD Ryzen', 
+                'gaming': 'Notebooks Gaming',
+                'work': 'Notebooks para Trabalho/Programação',
+                'best': 'Melhores Ofertas',
+                'under2500': 'Notebooks até R$ 2.500'
+            };
+            
+            const subtitles = {
+                'all': 'Analise e compare todos os notebooks disponíveis',
+                'intel': 'Processadores Intel de alto desempenho',
+                'ryzen': 'Processadores AMD Ryzen com ótimo custo-benefício',
+                'gaming': 'Notebooks com placas dedicadas para jogos',
+                'work': 'Ideal para programação, design e produtividade',
+                'best': 'As melhores opções com ótimo custo-benefício',
+                'under2500': 'Opções econômicas sem abrir mão da qualidade'
+            };
+            
+            document.getElementById('page-title').textContent = titles[category] || 'Dashboard de Comparação';
+            document.getElementById('page-subtitle').textContent = subtitles[category] || 'Analise e compare os melhores notebooks do mercado';
+            document.getElementById('products-title').textContent = titles[category] || 'Notebooks em Destaque';
+            
+            applyFilters();
+        }
+
+        // Aplicar filtros
+        function applyFilters() {
+            let filtered = products[currentFilter] || products.all;
+            
+            // Filtrar por tipo de processador
+            if (!activeFilters.intel || !activeFilters.ryzen) {
+                filtered = filtered.filter(p => 
+                    (activeFilters.intel && p.category.includes('intel')) ||
+                    (activeFilters.ryzen && p.category.includes('ryzen'))
+                );
+            }
+            
+            // Filtrar por preço
+            if (activeFilters.price !== 'all') {
+                const maxPrice = parseInt(activeFilters.price);
+                filtered = filtered.filter(p => p.priceDiscount <= maxPrice);
+            }
+            
+            // Filtrar por RAM
+            if (activeFilters.ram.length > 0) {
+                filtered = filtered.filter(p => activeFilters.ram.includes(p.ram.toString()));
+            }
+            
+            // Filtrar por lojas
+            filtered = filtered.filter(p => activeFilters.stores.includes(p.store));
+            
+            currentProducts = filtered;
+            renderProducts();
+        }
+
+        // Toggle filtros
+        function toggleFilter(type) {
+            activeFilters[type] = !activeFilters[type];
+            applyFilters();
+        }
+
+        function filterByPrice(price) {
+            activeFilters.price = price;
+            applyFilters();
+        }
+
+        function toggleRamFilter(ram) {
+            const index = activeFilters.ram.indexOf(ram);
+            if (index > -1) {
+                activeFilters.ram.splice(index, 1);
+            } else {
+                activeFilters.ram.push(ram);
+            }
+            applyFilters();
+        }
+
+        function toggleStore(store) {
+            const index = activeFilters.stores.indexOf(store);
+            if (index > -1) {
+                activeFilters.stores.splice(index, 1);
+            } else {
+                activeFilters.stores.push(store);
+            }
+            applyFilters();
+        }
+
+        // Limpar todos os filtros
+        function clearFilters() {
+            activeFilters = {
+                intel: true,
+                ryzen: true,
+                price: 'all',
+                ram: [],
+                stores: ['kabum', 'amazon', 'magalu', 'americanas']
+            };
+            
+            // Resetar checkboxes e radios
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                if (cb.name !== 'price') {
+                    cb.checked = true;
+                }
+            });
+            
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                if (radio.value === 'all') {
+                    radio.checked = true;
+                }
+            });
+            
+            applyFilters();
+        }
+
+        // Renderizar produtos
+        function renderProducts() {
+            const container = document.getElementById('products-container');
+            
+            if (currentProducts.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray-400);">
+                        <i class="fas fa-search" style="font-size: 3em; margin-bottom: 20px;"></i>
+                        <h3>Nenhum notebook encontrado</h3>
+                        <p>Tente alterar os filtros para ver mais opções.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = currentProducts.map(product => `
+                <div class="product-card ${product.featured ? 'featured' : ''}" data-product="${product.id}">
+                    <div class="product-header">
+                        <div>
+                            ${product.featured ? `
+                                <span class="product-badge badge-featured">
+                                    <i class="fas fa-crown"></i>
+                                    Destaque
+                                </span>
+                            ` : ''}
+                            ${product.discount > 15 ? `
+                                <span class="product-badge badge-discount">
+                                    <i class="fas fa-tag"></i>
+                                    -${product.discount}%
+                                </span>
+                            ` : ''}
+                            <div class="product-brand">${product.brand}</div>
+                            <div class="product-model">${product.model}</div>
+                            <span class="store-badge store-${product.store}">${product.store.toUpperCase()}</span>
+                        </div>
+                        <div class="product-price">
+                            <div class="price-current">R$ ${product.priceDiscount.toFixed(2)}</div>
+                            ${product.discount > 0 ? `
+                                <div class="price-original">R$ ${product.priceOriginal.toFixed(2)}</div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="product-specs">
+                        <div class="spec-item">
+                            <span class="spec-label">Processador</span>
+                            <span class="spec-value">${product.processor}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Memória RAM</span>
+                            <span class="spec-value">${product.ram}GB</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Armazenamento</span>
+                            <span class="spec-value">${product.storage}GB ${product.ssd ? 'SSD' : 'HDD'}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Tela</span>
+                            <span class="spec-value">${product.screen}</span>
+                        </div>
+                    </div>
+
+                    <div style="margin: 15px 0; padding: 0 1.5rem;">
+                        <div style="font-weight: 600; color: var(--gray-400); margin-bottom: 8px; font-size: 0.875rem;">
+                            <i class="fas fa-check-circle"></i> Vantagens:
+                        </div>
+                        <div>
+                            ${product.specs.map(spec => `
+                                <span style="background: rgba(37, 99, 235, 0.1); padding: 4px 10px; border-radius: 12px; font-size: 0.8em; margin-right: 8px; display: inline-block; margin-bottom: 5px; color: var(--primary-light);">
+                                    ${spec}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    ${product.issues && product.issues.length > 0 ? `
+                        <div style="margin: 15px 0; padding: 0 1.5rem;">
+                            <div style="font-weight: 600; color: var(--gray-400); margin-bottom: 8px; font-size: 0.875rem;">
+                                <i class="fas fa-exclamation-triangle"></i> Considerações:
+                            </div>
+                            <div>
+                                ${product.issues.map(issue => `
+                                    <span style="background: rgba(239, 68, 68, 0.1); padding: 4px 10px; border-radius: 12px; font-size: 0.8em; margin-right: 8px; display: inline-block; margin-bottom: 5px; color: var(--danger);">
+                                        ${issue}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="product-footer">
+                        <div class="performance-score">
+                            <div class="score-value">${product.performance}</div>
+                            <span>Score</span>
+                        </div>
+                        <a href="${product.url}" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i>
+                            Comprar na ${product.store.toUpperCase()}
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Funções auxiliares
+        function showProduct(productId) {
+            const product = products.all.find(p => p.id === productId);
+            if (product) {
+                // Scroll para o produto
+                const element = document.querySelector(`[data-product="${productId}"]`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                    element.style.animation = 'pulse 2s';
+                    setTimeout(() => {
+                        element.style.animation = '';
+                    }, 2000);
+                }
+            }
+        }
+
+        function showAllProducts() {
+            filterProducts('all');
+        }
+
+        function refreshData() {
+            // Simular atualização de dados
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Atualizando...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                updateStats();
+                alert('Dados atualizados com sucesso!');
+            }, 1500);
+        }
+
+        function changeChartRange(range) {
+            const buttons = document.querySelectorAll('.chart-actions .btn');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes(range === 'week' ? '7 Dias' : '30 Dias')) {
+                    btn.classList.add('btn-primary');
+                    btn.classList.remove('btn-outline');
+                } else {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline');
+                }
+            });
+        }
+
+        // Pesquisa em tempo real
+        function searchProducts() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            if (searchTerm === '') {
+                applyFilters();
+                return;
+            }
+            
+            const filtered = currentProducts.filter(product => 
+                product.brand.toLowerCase().includes(searchTerm) ||
+                product.model.toLowerCase().includes(searchTerm) ||
+                product.processor.toLowerCase().includes(searchTerm) ||
+                product.store.toLowerCase().includes(searchTerm)
+            );
+            
+            const container = document.getElementById('products-container');
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray-400);">
+                        <i class="fas fa-search" style="font-size: 3em; margin-bottom: 20px;"></i>
+                        <h3>Nenhum resultado para "${searchTerm}"</h3>
+                        <p>Tente outros termos de busca.</p>
+                    </div>
+                `;
+            } else {
+                currentProducts = filtered;
+                renderProducts();
+            }
+        }
+
+        // Exportar para CSV
+        function exportToCSV() {
+            const headers = ['Marca', 'Modelo', 'Processador', 'RAM', 'Armazenamento', 'Tela', 'Sistema', 'Preço Original', 'Preço Desconto', 'Desconto', 'Loja', 'URL'];
+            const csvData = [
+                headers.join(','),
+                ...currentProducts.map(p => [
+                    p.brand,
+                    `"${p.model}"`,
+                    `"${p.processor}"`,
+                    `${p.ram}GB`,
+                    `${p.storage}GB ${p.ssd ? 'SSD' : 'HDD'}`,
+                    `"${p.screen}"`,
+                    p.os,
+                    `R$ ${p.priceOriginal.toFixed(2)}`,
+                    `R$ ${p.priceDiscount.toFixed(2)}`,
+                    `${p.discount}%`,
+                    p.store.toUpperCase(),
+                    p.url
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvData], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `notebooks_comparacao_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Mostrar informações sobre o projeto
+        function showAbout() {
+            alert(`TechCompare Pro v2.0\n\nDashboard profissional para comparação de notebooks\n\n• 22 notebooks monitorados\n• 4 lojas parceiras\n• Sistema de categorias inteligente\n• Filtros avançados\n• Links diretos para compras\n\nDesenvolvido com ❤️ para ajudar na escolha do notebook ideal!`);
+        }
+
+        // Atualizar estatísticas
+        function updateStats() {
+            document.getElementById('total-products').textContent = products.all.length;
+            const avgPrice = products.all.reduce((sum, p) => sum + p.priceDiscount, 0) / products.all.length;
+            document.getElementById('avg-price').textContent = `R$ ${avgPrice.toFixed(0)}`;
+            
+            const productsWithDiscount = products.all.filter(p => p.discount > 0);
+            const avgDiscount = productsWithDiscount.reduce((sum, p) => sum + p.discount, 0) / productsWithDiscount.length;
+            document.getElementById('avg-discount').textContent = `${avgDiscount.toFixed(1)}%`;
+            
+            document.getElementById('stores-count').textContent = [...new Set(products.all.map(p => p.store))].length;
+        }
+
+        // Inicializar gráficos
+        function initializeCharts() {
+            const priceCtx = document.getElementById('priceChart').getContext('2d');
+            new Chart(priceCtx, {
+                type: 'bar',
+                data: {
+                    labels: products.all.slice(0, 10).map(p => p.brand),
+                    datasets: [{
+                        label: 'Preço com Desconto',
+                        data: products.all.slice(0, 10).map(p => p.priceDiscount),
+                        backgroundColor: 'rgba(37, 99, 235, 0.7)',
+                        borderColor: 'rgba(37, 99, 235, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Preço Original',
+                        data: products.all.slice(0, 10).map(p => p.priceOriginal),
+                        backgroundColor: 'rgba(107, 114, 128, 0.5)',
+                        borderColor: 'rgba(107, 114, 128, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
